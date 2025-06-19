@@ -1,7 +1,6 @@
-//import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
-function Login() {
+function Login({ updateUserDetails }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -11,26 +10,29 @@ function Login() {
   const [message, setMessage] = useState(null);
 
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   const validate = () => {
     let isValid = true;
-    let newErrors = {};
+    const newErrors = {};
 
-    if (formData.username.length === 0) {
+    if (formData.username.trim() === "") {
       isValid = false;
       newErrors.username = "Username is mandatory";
     }
 
-    setErrors(newErrors);
+    if (formData.password.trim() === "") {
+      isValid = false;
+      newErrors.password = "Password is mandatory";
+    }
 
+    setErrors(newErrors);
     return isValid;
   };
 
@@ -39,20 +41,24 @@ function Login() {
 
     if (validate()) {
       if (formData.username === "admin" && formData.password === "admin") {
-        setMessage("Valid Credentials");
+        updateUserDetails({
+          name: "John Cena",
+          email: "john@cena.com",
+        });
       } else {
-        setMessage("Invalid Credentials");
+        setMessage("Invalid credentials");
       }
     }
   };
 
   return (
-    <div className="container-text-center">
-      {message && message}
+    <div className="container text-center">
       <h1>Login Page</h1>
 
+      {message && <p style={{ color: "red" }}>{message}</p>}
+
       <form onSubmit={handleSubmit}>
-        <div>
+        <div style={{ margin: "10px" }}>
           <label>Username:</label>
           <input
             type="text"
@@ -60,10 +66,10 @@ function Login() {
             value={formData.username}
             onChange={handleChange}
           />
-          {errors.username && errors.username}
+          {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
         </div>
 
-        <div>
+        <div style={{ margin: "10px" }}>
           <label>Password:</label>
           <input
             type="password"
@@ -71,12 +77,11 @@ function Login() {
             value={formData.password}
             onChange={handleChange}
           />
-
-          {errors.password && errors.password}
+          {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
         </div>
 
-        <div>
-          <button>Submit</button>
+        <div style={{ margin: "10px" }}>
+          <button type="submit">Submit</button>
         </div>
       </form>
     </div>
